@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decider-web
+  # namespace: decider-ns
+  labels:
+    app: decider-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: decider-web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: decider-web
+    spec:
+      restartPolicy: Always 
+      containers:
+        - name: decider-web
+          image: madkar777/decider-web:v13.1.3
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "100Mi"
+            limits:
+              cpu: "500m"
+              memory: "100Mi"
+          env:
+            - name: KIOSK_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: KIOSK_MODE            
+            - name: DB_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_HOSTNAME
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_DATABASE
+            - name: DB_ADMIN_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_NAME  
+            - name: DB_ADMIN_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_PASS                  
+            - name: DB_KIOSK_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_KIOSK_NAME                
+            - name: DB_KIOSK_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_KIOSK_PASS   
+            - name: APP_ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: APP_ADMIN_EMAIL
+            - name: APP_ADMIN_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: APP_ADMIN_PASS   
+            - name: CART_ENC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: CART_ENC_KEY   
+
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_NAME
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_NAME                 
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_PASS  
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_DATABASE   
+
+      #     volumeMounts:
+      #       - mountPath: /opt/decider/ro_config
+      #         name: web-claim0
+      #         readOnly: true
+      # volumes:
+      #   - name: web-claim0
+      #     persistentVolumeClaim:
+      #       claimName: web-claim0
+      #       readOnly: true      
+                       
+      #     volumeMounts:
+      #       - name: web-persistent-storage
+      #         mountPath: /opt/decider/ro_config  
+      # volumes:
+      #   - name: web-persistent-storage
+      #     persistentVolumeClaim: 
+      #       claimName: web-pv-claim       
+# status: {}                
+            # - name: usermanagement-dbcreation-script
+            #   mountPath: /docker-entrypoint-initdb.d #https://hub.docker.com/_/mysql Refer Initializing a fresh                  
+
+
+        # volumes:
+        #     - type: bind
+        #       source: ./config
+        #       target: /opt/decider/ro_config
+        #       read_only: true
+
+#           volumeMounts:
+#             - name: postgres-persistent-storage
+#               mountPath: /opt/decider/ro_config 
+#       volumes:
+#         - name: postgres-persistent-storage
+#           persistentVolumeClaim: 
+#             claimName: postgres-pv-claim       
+# status: {}         

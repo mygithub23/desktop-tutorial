@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  # namespace: decider-ns
+  labels:
+    app: db-service
+spec:
+  type: NodePort
+  ports:
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: decider-db
+status:
+  loadBalancer: {}

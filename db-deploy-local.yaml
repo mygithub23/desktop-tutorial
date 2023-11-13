@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decider-db
+  # namespace: decider-ns
+  labels:
+    app: decider-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: decider-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: decider-db
+    spec:
+      restartPolicy: Always    
+      containers:
+        - name: decider-db
+          image: postgres:14-alpine
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "100Mi"
+            limits:
+              cpu: "500m"
+              memory: "100Mi"
+          ports:
+            - name:  postgres
+              containerPort: 5432
+              protocol: TCP
+              
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_NAME
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_NAME                 
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_PASS  
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_DATABASE                   
+            - name: POSTGRES_INITDB_ARGS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: POSTGRES_INITDB_ARGS 
+            - name:  POSTGRES_HOST_AUTH_METHOD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key:  POSTGRES_HOST_AUTH_METHOD    
+
+            - name: KIOSK_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: KIOSK_MODE            
+            - name: DB_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_HOSTNAME
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_DATABASE
+            - name: DB_ADMIN_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_NAME  
+            - name: DB_ADMIN_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_ADMIN_PASS                  
+            - name: DB_KIOSK_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_KIOSK_NAME                
+            - name: DB_KIOSK_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: DB_KIOSK_PASS   
+            - name: APP_ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: APP_ADMIN_EMAIL
+            - name: APP_ADMIN_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: APP_ADMIN_PASS   
+            - name: CART_ENC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: env-configmap
+                  key: CART_ENC_KEY      
+          volumeMounts:
+            - name: postgres-pv-claim
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-pv-claim
+          persistentVolumeClaim: 
+            claimName: postgres-pv-claim       
+status: {}
